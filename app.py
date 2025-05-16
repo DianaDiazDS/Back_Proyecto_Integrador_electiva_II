@@ -7,8 +7,6 @@ Original file is located at
     https://colab.research.google.com/drive/1KGri5u9nSW8QvGA0yvQGr24oEgA1LD4l
 """
 
-!pip install transformers[tf] huggingface_hub google-cloud-dialogflow fastapi python-multipart uvicorn pyngrok nest_asyncio python-dotenv
-
 import tensorflow as tf
 from google.colab import drive
 
