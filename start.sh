@@ -2,7 +2,7 @@
 
 # 1. Instala TensorFlow primero
 pip install transformers[tf]
-
+pip install tensorflow
 
 # 2. Luego instala el resto de los paquetes
 pip install -r requirements.txt
