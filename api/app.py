@@ -273,4 +273,7 @@ async def conversar(
 # print(f"API disponible en: {public_url}")
 
 # Ejecutar servidor
-uvicorn.run(app, host="0.0.0.0", port=8000)
+# uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    # Ejecutar el servidor FastAPI
+    app.run()
