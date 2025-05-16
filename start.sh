@@ -3,9 +3,9 @@
 # 1. Instala TensorFlow primero
 pip install --upgrade pip
 pip install transformers[tf]
-pip install tensorflow
-pip install transformers==4.40.1
-pip install tokenizers==0.19.1
+pip install tensorflow==2.15.0
+pip install transformers==4.35.0 
+pip install tokenizers==0.13.3
 
 # 2. Luego instala el resto de los paquetes
 pip install -r requirements.txt
