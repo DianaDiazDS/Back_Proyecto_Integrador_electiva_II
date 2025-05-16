@@ -24,7 +24,6 @@ from fastapi.responses import JSONResponse
 from typing import Optional
 import shutil
 import uuid
-import os
 
 # Configuraciones generales
 import warnings
@@ -38,9 +37,7 @@ from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
 from dotenv import load_dotenv
 
-from dotenv import load_dotenv
-import os
-from google.cloud import dialogflow_v2 as dialogflow
+
 from google.oauth2 import service_account
 
 load_dotenv()
@@ -207,12 +204,12 @@ from fastapi import FastAPI, File, Form, UploadFile
 from fastapi.responses import JSONResponse
 from typing import Optional
 import uuid
-import os
 import shutil
 import uvicorn
 import nest_asyncio
 
 # Requerido si estás en Colab o Jupyter
+import re
 nest_asyncio.apply()
 
 def extraer_url(texto):
@@ -271,5 +268,5 @@ async def conversar(
 # Ejecutar servidor
 # uvicorn.run(app, host="0.0.0.0", port=8000)
 if __name__ == "__main__":
-    # Ejecutar el servidor FastAPI
-    app.run()
+    
+    uvicorn.run(app, host="0.0.0.0", port=8000)
