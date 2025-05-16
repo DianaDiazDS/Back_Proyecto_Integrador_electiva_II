@@ -8,18 +8,15 @@ Original file is located at
 """
 
 import tensorflow as tf
-from google.colab import drive
 
 import os
 from google.cloud import dialogflow_v2 as dialogflow
 import json
-from google.colab import drive
+
 import pandas as pd
 import numpy as np
-import uvicorn
 import threading
-from pyngrok import ngrok
-import joblib
+
 import nest_asyncio
 
 from fastapi import FastAPI, File, UploadFile, Form
@@ -212,7 +209,6 @@ from typing import Optional
 import uuid
 import os
 import shutil
-from pyngrok import ngrok
 import uvicorn
 import nest_asyncio
 
