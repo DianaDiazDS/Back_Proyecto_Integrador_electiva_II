@@ -206,75 +206,70 @@ from typing import Optional
 import uuid
 import shutil
 import uvicorn
-import nest_asyncio
 
-# Requerido si estás en Colab o Jupyter
+# app.py
+
+import os
 import re
-nest_asyncio.apply()
+import uuid
+import shutil
+from flask import Flask, request, jsonify, send_from_directory
+from flask_cors import CORS
+from werkzeug.utils import secure_filename
 
-def extraer_url(texto):
-    urls = re.findall(r'(https?://\S+)', texto)
-    return urls[0] if urls else None
-    
-from fastapi.middleware.cors import CORSMiddleware
+# Importa aquí tus funciones y variables globales
+# from tu_modulo import detec_intent_texts_full, AnalizarEnfermedadHoja, project_id, session_id, language_code
 
-app = FastAPI(title="backend-api")
+app = Flask(__name__)
+app.config['UPLOAD_FOLDER'] = 'uploads'
+os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+# Configuración de CORS
 origins = [
     "http://127.0.0.1:5500",
     "https://glittery-platypus-06821f.netlify.app",
 ]
-
-app.add_middleware(
-    CORSMiddleware,
-    allow_origins=origins,
-    allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
-)
-
-@app.get("/")
-async def home():
-    return JSONResponse(content="API del backend del proyecto integrador")
+CORS(app, origins=origins, supports_credentials=True)
 
 
-@app.post("/conversar")
-async def conversar(
-    mensaje: str = Form(...),
-    imagen: Optional[UploadFile] = File(None)):
+def extraer_url(texto):
+    urls = re.findall(r'(https?://\S+)', texto)
+    return urls[0] if urls else None
 
+
+@app.route('/', methods=['GET'])
+def home():
+    return jsonify("API del backend del proyecto integrador")
+
+
+@app.route('/conversar', methods=['POST'])
+def conversar():
+    mensaje = request.form.get('mensaje', '')
+    imagen = request.files.get('imagen', None)
+
+    # Llama a tu función para detectar intención
     resultado = detec_intent_texts_full(project_id, session_id, mensaje, language_code)
 
-    imagen_path = None
-
-    # Caso 1: imagen cargada directamente
+    # Caso 1: imagen subida
     if imagen:
-        extension = imagen.filename.split('.')[-1]
-        filename = f"{uuid.uuid4()}.{extension}"
-        imagen_path = os.path.join("uploads", filename)
-        os.makedirs("uploads", exist_ok=True)
+        filename = secure_filename(imagen.filename)
+        ext = filename.rsplit('.', 1)[-1]
+        unique_name = f"{uuid.uuid4()}.{ext}"
+        path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+        imagen.save(path)
 
-        with open(imagen_path, "wb") as buffer:
-            shutil.copyfileobj(imagen.file, buffer)
+        resultado["imagen_guardada"] = path
+        resultado["prediccion"] = AnalizarEnfermedadHoja(path)
 
-        resultado["imagen_guardada"] = imagen_path
-        resultado["prediccion"] = AnalizarEnfermedadHoja(imagen_path)
-
-    # Caso 2: se envió una URL en el mensaje
+    # Caso 2: URL en el mensaje
     else:
-        url_detectada = extraer_url(mensaje)
-        if url_detectada:
-            resultado["url_detectada"] = url_detectada
-            resultado["prediccion"] = AnalizarEnfermedadHoja(url_detectada)
+        url = extraer_url(mensaje)
+        if url:
+            resultado["url_detectada"] = url
+            resultado["prediccion"] = AnalizarEnfermedadHoja(url)
 
-    return JSONResponse(content=resultado)
+    return jsonify(resultado)
 
-# # Conexión con ngrok
-# public_url = ngrok.connect(8000)
-# print(f"API disponible en: {public_url}")
-
-# Ejecutar servidor
-# uvicorn.run(app, host="0.0.0.0", port=8000)
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 8080))  # Usa 8080 si no se encuentra la variable
-    uvicorn.run("main:app", host="0.0.0.0", port=port)
+if __name__ == '__main__':
+    port = int(os.environ.get('PORT', 8080))
+    app.run(host='0.0.0.0', port=port)
