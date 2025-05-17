@@ -37,6 +37,8 @@ from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
 from dotenv import load_dotenv
 
+import os
+os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # 0 = all logs, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
 
 from google.oauth2 import service_account
 
