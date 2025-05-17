@@ -14,13 +14,11 @@ RUN chmod +x start.sh
 RUN pip install --upgrade pip && \
     pip install \
         tensorflow==2.15.1 \
-        transformers[tf] \
         tensorflow[and-cuda] \
         flask \
         flask-cors \
         tokenizers==0.14 \
         fastapi \
-        uvicorn \
         gunicorn \
         python-multipart \
         numpy \
@@ -29,8 +27,6 @@ RUN pip install --upgrade pip && \
         python-dotenv \
         google-cloud-dialogflow \
         google-auth \
-        huggingface_hub \
-        nest_asyncio \
         pandas 
 
 # Expone el puerto que usará la app (Google Cloud Run requiere el 8080)
