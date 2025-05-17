@@ -29,8 +29,6 @@ RUN pip install --upgrade pip && \
         google-auth \
         huggingface_hub \
         nest_asyncio \
-        shutilwhich \
-        uuid \
         pandas 
 
 # Expone el puerto que usará la app (Google Cloud Run requiere el 8080)
