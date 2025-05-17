@@ -77,11 +77,11 @@ except Exception as e:
     print(f" Error de conexión: {e}")
 
 # Descargar el modelo
-model_path = hf_hub_download(repo_id="liriope/PlantDiseaseDetection", filename="plant_disease_efficientnetb4.h5")
+#model_path = hf_hub_download(repo_id="liriope/PlantDiseaseDetection", filename="plant_disease_efficientnetb4.h5")
 
 # Cargar el modelo completo incluyendo la capa personalizada
-modelo_cnn = tf.keras.models.load_model(model_path)
-
+#modelo_cnn = tf.keras.models.load_model(model_path)
+modelo_cnn = tf.keras.models.load_model("plant_disease_efficientnetb4.h5")
 # Acceso a drive
 # drive.mount('/content/drive')
 
