@@ -200,76 +200,43 @@ def detec_intent_texts_full(project_id, session_id, text, language_code):
 
 # !ngrok config add-authtoken 2ueWlmy8gMJ6AOv9EVOV75b556b_3PwVsjgVrVPmuNKD13prY
 
-from fastapi import FastAPI, File, Form, UploadFile
-from fastapi.responses import JSONResponse
-from typing import Optional
-import uuid
-import shutil
-import uvicorn
-
-# app.py
-
-import os
-import re
-import uuid
-import shutil
-from flask import Flask, request, jsonify, send_from_directory
+from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
-
-# Importa aquí tus funciones y variables globales
-# from tu_modulo import detec_intent_texts_full, AnalizarEnfermedadHoja, project_id, session_id, language_code
+import os, uuid, re
+from utils import AnalizarEnfermedadHoja, detec_intent_texts_full
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
+CORS(app, origins=["http://127.0.0.1:5500", "https://glittery-platypus-06821f.netlify.app"], supports_credentials=True)
 
-# Configuración de CORS
-origins = [
-    "http://127.0.0.1:5500",
-    "https://glittery-platypus-06821f.netlify.app",
-]
-CORS(app, origins=origins, supports_credentials=True)
-
-
-def extraer_url(texto):
-    urls = re.findall(r'(https?://\S+)', texto)
-    return urls[0] if urls else None
-
-
-@app.route('/', methods=['GET'])
+@app.route('/')
 def home():
     return jsonify("API del backend del proyecto integrador")
-
 
 @app.route('/conversar', methods=['POST'])
 def conversar():
     mensaje = request.form.get('mensaje', '')
-    imagen = request.files.get('imagen', None)
+    imagen = request.files.get('imagen')
 
-    # Llama a tu función para detectar intención
     resultado = detec_intent_texts_full(project_id, session_id, mensaje, language_code)
 
-    # Caso 1: imagen subida
     if imagen:
         filename = secure_filename(imagen.filename)
-        ext = filename.rsplit('.', 1)[-1]
-        unique_name = f"{uuid.uuid4()}.{ext}"
-        path = os.path.join(app.config['UPLOAD_FOLDER'], unique_name)
+        path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4()}.{filename.rsplit('.', 1)[-1]}")
         imagen.save(path)
-
         resultado["imagen_guardada"] = path
         resultado["prediccion"] = AnalizarEnfermedadHoja(path)
-
-    # Caso 2: URL en el mensaje
     else:
-        url = extraer_url(mensaje)
+        url = re.search(r'(https?://\S+)', mensaje)
         if url:
+            url = url.group(0)
             resultado["url_detectada"] = url
             resultado["prediccion"] = AnalizarEnfermedadHoja(url)
 
     return jsonify(resultado)
 
 if __name__ == '__main__':
-    port = int(os.environ.get('PORT', 8080))
-    app.run(host='0.0.0.0', port=port)
+    app.run(host='0.0.0.0', port=int(os.environ.get('PORT', 8080)))
+
