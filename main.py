@@ -37,8 +37,6 @@ from tensorflow.keras.layers import Layer
 import tensorflow.keras.backend as K
 from dotenv import load_dotenv
 
-import os
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"  # 0 = all logs, 1 = filter INFO, 2 = filter WARNING, 3 = filter ERROR
 
 from google.oauth2 import service_account
 
@@ -202,38 +200,80 @@ def detec_intent_texts_full(project_id, session_id, text, language_code):
 
 # !ngrok config add-authtoken 2ueWlmy8gMJ6AOv9EVOV75b556b_3PwVsjgVrVPmuNKD13prY
 
-from flask import Flask, request, jsonify
-from flask_cors import CORS
-from werkzeug.utils import secure_filename
-import os, uuid, re
+from fastapi import FastAPI, File, Form, UploadFile
+from fastapi.responses import JSONResponse
+from typing import Optional
+import uuid
+import shutil
+import uvicorn
+import nest_asyncio
 
-app = Flask(__name__)
-app.config['UPLOAD_FOLDER'] = 'uploads'
-os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-CORS(app)  # No pongas supports_credentials=True
+# Requerido si estás en Colab o Jupyter
+import re
 
-@app.route('/')
-def home():
-    return jsonify("API del backend del proyecto integrador")
+def extraer_url(texto):
+    urls = re.findall(r'(https?://\S+)', texto)
+    return urls[0] if urls else None
+    
+from fastapi.middleware.cors import CORSMiddleware
 
-@app.route('/conversar', methods=['POST'])
-def conversar():
-    mensaje = request.form.get('mensaje', '')
-    imagen = request.files.get('imagen')
+app = FastAPI(title="backend-api")
+
+origins = [
+    "http://127.0.0.1:5500",
+    "https://glittery-platypus-06821f.netlify.app",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
+@app.get("/")
+async def home():
+    return JSONResponse(content="API del backend del proyecto integrador")
+
+
+@app.post("/conversar")
+async def conversar(
+    mensaje: str = Form(...),
+    imagen: Optional[UploadFile] = File(None)):
 
     resultado = detec_intent_texts_full(project_id, session_id, mensaje, language_code)
 
-    if imagen:
-        filename = secure_filename(imagen.filename)
-        path = os.path.join(app.config['UPLOAD_FOLDER'], f"{uuid.uuid4()}.{filename.rsplit('.', 1)[-1]}")
-        imagen.save(path)
-        resultado["imagen_guardada"] = path
-        resultado["prediccion"] = AnalizarEnfermedadHoja(path)
-    else:
-        url = re.search(r'(https?://\S+)', mensaje)
-        if url:
-            url = url.group(0)
-            resultado["url_detectada"] = url
-            resultado["prediccion"] = AnalizarEnfermedadHoja(url)
+    imagen_path = None
 
-    return jsonify(resultado)
+    # Caso 1: imagen cargada directamente
+    if imagen:
+        extension = imagen.filename.split('.')[-1]
+        filename = f"{uuid.uuid4()}.{extension}"
+        imagen_path = os.path.join("uploads", filename)
+        os.makedirs("uploads", exist_ok=True)
+
+        with open(imagen_path, "wb") as buffer:
+            shutil.copyfileobj(imagen.file, buffer)
+
+        resultado["imagen_guardada"] = imagen_path
+        resultado["prediccion"] = AnalizarEnfermedadHoja(imagen_path)
+
+    # Caso 2: se envió una URL en el mensaje
+    else:
+        url_detectada = extraer_url(mensaje)
+        if url_detectada:
+            resultado["url_detectada"] = url_detectada
+            resultado["prediccion"] = AnalizarEnfermedadHoja(url_detectada)
+
+    return JSONResponse(content=resultado)
+
+# # Conexión con ngrok
+# public_url = ngrok.connect(8000)
+# print(f"API disponible en: {public_url}")
+
+# Ejecutar servidor
+# uvicorn.run(app, host="0.0.0.0", port=8000)
+if __name__ == "__main__":
+    port = int(os.environ.get("PORT", 8080))  # Usa 8080 si no se encuentra la variable
+    uvicorn.run("main:app", host="0.0.0.0", port=port)

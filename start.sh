@@ -1,7 +1,4 @@
 #!/bin/bash
 
-# Activar entorno si es necesario (descomenta si usas venv)
-# source venv/bin/activate
-
-# Ejecutar con gunicorn en modo producción
-exec gunicorn -w 4 -b 0.0.0.0:${PORT:-8080} main:app
+# Solo arrancar la app, asumiendo que todo está instalado
+exec uvicorn main:app --host 0.0.0.0 --port ${PORT:-8080}
