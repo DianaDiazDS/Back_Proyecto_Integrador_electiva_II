@@ -208,7 +208,7 @@ import os, uuid, re
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
 os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
-CORS(app, origins="*")  # No pongas supports_credentials=True
+CORS(app)  # No pongas supports_credentials=True
 
 @app.route('/')
 def home():
