@@ -219,7 +219,7 @@ from fastapi.middleware.cors import CORSMiddleware
 app = FastAPI(title="backend-api")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Puedes especificar tu URL de frontend en lugar de "*"
+    allow_origins=["https://glittery-platypus-06821f.netlify.app"],  # Puedes especificar tu URL de frontend en lugar de "*"
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
