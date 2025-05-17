@@ -15,6 +15,7 @@ RUN pip install --upgrade pip && \
     pip install \
         tensorflow==2.15.1 \
         transformers[tf] \
+        tensorflow[and-cuda] \
         flask \
         flask-cors \
         tokenizers==0.14 \
