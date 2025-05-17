@@ -1,7 +1,7 @@
 #!/bin/bash
 
-# Solo arrancar la app Flask, asumiendo que todo está instalado
-export FLASK_APP=main.py
-export FLASK_ENV=production
-exec flask run --host=0.0.0.0 --port=${PORT:-8080}
+# Activar entorno si es necesario (descomenta si usas venv)
+# source venv/bin/activate
 
+# Ejecutar con gunicorn en modo producción
+exec gunicorn -w 4 -b 0.0.0.0:${PORT:-8080} main:app
