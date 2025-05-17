@@ -13,7 +13,6 @@ RUN chmod +x start.sh
 # Actualiza pip y instala dependencias
 RUN pip install --upgrade pip && \
     pip install \
-        transformers[tf] \
         tensorflow==2.15.1 \
         fastapi \
         uvicorn \
