@@ -29,7 +29,7 @@ RUN pip install --upgrade pip && \
         nest_asyncio \
         shutilwhich \
         uuid \
-        pandas \
+        pandas 
 
 # Expone el puerto que usará la app (Google Cloud Run requiere el 8080)
 EXPOSE 8080
