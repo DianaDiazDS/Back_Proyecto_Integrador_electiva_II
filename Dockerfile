@@ -17,7 +17,6 @@ RUN pip install --upgrade pip && \
         transformers[tf] \
         flask \
         flask-cors \
-        request \
         tokenizers==0.14 \
         fastapi \
         uvicorn \
