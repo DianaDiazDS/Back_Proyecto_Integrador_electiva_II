@@ -204,7 +204,6 @@ from flask import Flask, request, jsonify
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
 import os, uuid, re
-from utils import AnalizarEnfermedadHoja, detec_intent_texts_full
 
 app = Flask(__name__)
 app.config['UPLOAD_FOLDER'] = 'uploads'
