@@ -14,6 +14,8 @@ RUN chmod +x start.sh
 RUN pip install --upgrade pip && \
     pip install \
         tensorflow==2.15.1 \
+        transformers[tf] \
+        tokenizers==0.14 \
         fastapi \
         uvicorn \
         python-multipart \
