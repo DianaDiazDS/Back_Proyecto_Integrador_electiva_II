@@ -15,6 +15,9 @@ RUN pip install --upgrade pip && \
     pip install \
         tensorflow==2.15.1 \
         transformers[tf] \
+        flask \
+        flask-cors \
+        request \
         tokenizers==0.14 \
         fastapi \
         uvicorn \
