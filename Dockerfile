@@ -13,6 +13,8 @@ RUN chmod +x start.sh
 # Actualiza pip y instala dependencias
 RUN pip install --upgrade pip && \
     pip install \
+        transformers[tf] \
+        tensorflow==2.15.1 \
         fastapi \
         uvicorn \
         python-multipart \
@@ -27,8 +29,6 @@ RUN pip install --upgrade pip && \
         shutilwhich \
         uuid \
         pandas \
-        tensorflow==2.15.1 \
-        transformers[tf] \
 
 # Expone el puerto que usará la app (Google Cloud Run requiere el 8080)
 EXPOSE 8080
