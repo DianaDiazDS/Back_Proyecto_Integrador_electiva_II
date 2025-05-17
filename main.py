@@ -222,16 +222,15 @@ app = FastAPI(title="backend-api")
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["https://glittery-platypus-06821f.netlify.app"],  # o ["*"] para todos los orígenes (no recomendado en producción)
-    allow_credentials=True,
-    allow_methods=["GET", "POST", "PUT", "DELETE"],  # métodos permitidos
+    allow_origins=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],
     allow_headers=[
         "Content-Type",
         "Authorization",
         "Accept",
         "X-Requested-With"
-    ],  # headers permitidos
-    expose_headers=["Content-Disposition"]  # headers que se pueden leer desde el frontend
+    ],
+    expose_headers=["Content-Disposition"]
 )
 
 @app.get("/")
