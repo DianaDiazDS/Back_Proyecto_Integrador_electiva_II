@@ -215,14 +215,23 @@ nest_asyncio.apply()
 def extraer_url(texto):
     urls = re.findall(r'(https?://\S+)', texto)
     return urls[0] if urls else None
+    
 from fastapi.middleware.cors import CORSMiddleware
+
 app = FastAPI(title="backend-api")
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["https://glittery-platypus-06821f.netlify.app"],  # o ["*"] para todos los orígenes (no recomendado en producción)
     allow_credentials=True,
-    allow_methods=["*"],
-    allow_headers=["*"],
+    allow_methods=["GET", "POST", "PUT", "DELETE"],  # métodos permitidos
+    allow_headers=[
+        "Content-Type",
+        "Authorization",
+        "Accept",
+        "X-Requested-With"
+    ],  # headers permitidos
+    expose_headers=["Content-Disposition"]  # headers que se pueden leer desde el frontend
 )
 
 @app.get("/")
