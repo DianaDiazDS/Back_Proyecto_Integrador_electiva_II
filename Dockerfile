@@ -20,6 +20,7 @@ RUN pip install --upgrade pip && \
         tokenizers==0.14 \
         fastapi \
         uvicorn \
+        gunicorn \
         python-multipart \
         numpy \
         pillow \
